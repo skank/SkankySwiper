@@ -1,8 +1,9 @@
 # Skanky Swiper
 
 -----------------
-    simply slider for prestashop home page
+    comming soon
 -----------------
+
 
 ### credit
 
