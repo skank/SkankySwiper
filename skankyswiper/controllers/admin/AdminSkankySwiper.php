@@ -37,7 +37,7 @@ class AdminSkankySwiperController extends ModuleAdminController {
 			$this->$action();
 		}
 		$url = $this->context->link->getAdminLink('AdminSkankySwiper');
-
+		$uri = __PS_BASE_URI__ ;
 		$query = 'SELECT * FROM '._DB_PREFIX_.'s_swiper  ORDER BY position ASC';
 		$results = Db::getInstance()->ExecuteS($query);
 
@@ -50,6 +50,7 @@ class AdminSkankySwiperController extends ModuleAdminController {
 		$this->context->smarty->assign('imgList', $imgList);
 		$this->context->smarty->assign('swipers', $results);
 		$this->context->smarty->assign('ajaxUrl', $url);
+		$this->context->smarty->assign('uri', $uri);
 		$this->addJqueryUI('ui.sortable');
 		$tpl = $this->createTemplate('content.tpl')->fetch();
 
@@ -117,7 +118,7 @@ class AdminSkankySwiperController extends ModuleAdminController {
 			$media['name'] = $h['X-File-Name'];
 			$media['size'] = $h['X-File-Size'];
 			$result['statu'] = true;
-			$result['message'] = '<div class="img-select"><span class="img-trash" data-img="/upload/skankyswiper/'.$h['X-File-Name'].'"><i class="material-icons">delete</i></span><img src="/upload/skankyswiper/'.$h['X-File-Name'].'" alt="'.$h['X-File-Name'].'" width="100" height="100"><br>'.$h['X-File-Name'].'</div>' ;
+			$result['message'] = '<div class="img-select"><span class="img-trash" data-img="/upload/skankyswiper/'.$h['X-File-Name'].'"><i class="material-icons">delete</i></span><img src="'.__PS_BASE_URI__ .'upload/skankyswiper/'.$h['X-File-Name'].'" alt="'.$h['X-File-Name'].'" width="100" height="100"><br>'.$h['X-File-Name'].'</div>' ;
 
 			if(Configuration::get('SKANKYSWIPER_RESIZE')){
 				$this->resizeImg($h['X-File-Name']);
@@ -144,6 +145,7 @@ class AdminSkankySwiperController extends ModuleAdminController {
 		$dHeight = Configuration::get('SKANKYSWIPER_HEIGHT');
 		$dir =  _PS_UPLOAD_DIR_.'skankyswiper/';
 		$fileName = $dir.'/'.$imgName;
+
 		$dimension = getimagesize($fileName);
 		$oWidth  = $dimension[0];
 		$oHeight = $dimension[1];
@@ -155,7 +157,24 @@ class AdminSkankySwiperController extends ModuleAdminController {
 		$dRation = $dWidth/$dHeight;
 		$info['dst_w'] = $dWidth;
 		$info['dst_h'] = $dHeight;
+
+		$info['src_x'] = 0; 
+		$info['src_y'] = 0;
+
+		$info['src_x'] = 0; 
+		$info['src_y'] = 0;
+		$info['src_w'] = $oWidth;
+		$info['src_h'] = $oHeight;
+
 		if($oRatio == $dRation){
+
+		}else if($oRatio < $dRation){
+			$info['dst_w'] = ($oWidth * $dHeight)/$oHeight;
+		}else if($oRatio > $dRation){
+			$info['dst_h']= ($oHeight * $dWidth)/$oWidth;
+		}
+
+/*		if($oRatio == $dRation){
 			$info['src_x'] = 0; 
 			$info['src_y'] = 0;
 			$info['src_w'] = $oWidth;
@@ -174,7 +193,7 @@ class AdminSkankySwiperController extends ModuleAdminController {
 			$info['src_y'] = 0;
 			$info['src_w'] = ($dWidth * ($oHeight))/$dHeight;
 			$info['src_h'] = $oHeight;
-		}
+		}*/
 
 		$miniature = imagecreatetruecolor($info['dst_w'],$info['dst_h']);
 		$ext = explode('.',$imgName);

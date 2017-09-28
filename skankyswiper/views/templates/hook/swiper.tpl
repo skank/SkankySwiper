@@ -24,6 +24,4 @@ document.addEventListener( 'DOMContentLoaded', function () {
     swiper = new Swiper('.swiper-container',{/literal}{$swiperConf|@json_encode nofilter}{literal});
 }, false );
 </script>
-
-
 {/literal}

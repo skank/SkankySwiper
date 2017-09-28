@@ -23,7 +23,7 @@
 		<div class="swiper-upload">
 			<div class="swiper-upload-btn">
 				<label class="swiper-label">Upload</label>
-				<input type="file" class="swiper-input-file" id="input-img">
+				<input type="file" class="swiper-input-file" id="input-img" name="files[]">
 				<button class="btn btn-default pull-left add-btn-file"  data-url="{$ajaxUrl}">
 					<i class="material-icons">add_circle_outline</i> <br>Ajouter
 				</button>
@@ -33,7 +33,7 @@
 					{if $img != '.' && $img != '..'  }
 					<div class="img-select">
 						<span class="img-trash" data-img="{$img}"><i class="material-icons">delete</i></span>
-						<img src="/upload/skankyswiper/{$img}" alt="{$img}" width="100" height="100"><br>
+						<img src="{$uri}upload/skankyswiper/{$img}" alt="{$img}" width="100" height="100"><br>
 						{$img}
 					</div>
 
@@ -213,7 +213,6 @@ $(document).ready(function(){
 			data = JSON.parse(data);
 			me.parents('.swiper-group').remove();
 		});
-		console.log(id)
 	});
 	
 	var fileList = [];
@@ -234,7 +233,6 @@ $(document).ready(function(){
 				alert(e.target.files[i].name + ' est trop volumineux');
 			}
 		}
-		console.log(fileList);//  5242880
 	});
 	$(".add-btn-file").on('click',function(e){
 		var link = $(this).attr('data-url');
@@ -254,16 +252,11 @@ $(document).ready(function(){
 	function upload(files,link,index){
 		var xhr = new XMLHttpRequest();
 		var file = files[index];
-		xhr.upload.onprogress = function(e){
-			console.log(e.loaded);
-			console.log(e.total);
-		};
+		xhr.upload.onprogress = function(e){};
 
 		xhr.onload = function(e){
-			console.log('upload complete');
-			console.log(e);
+
 			var retour = jQuery.parseJSON(e.target.responseText);
-			console.log(retour);
 			if(retour.statu){
 				$('.swiper-upload-list').append(retour.message);
 				if(index < files.length-1){
@@ -274,6 +267,7 @@ $(document).ready(function(){
 				}
 			}else{
 				alert(retour.message);
+				fileList = [];
 			}
 		};
 
