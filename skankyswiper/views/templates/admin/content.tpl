@@ -1,4 +1,8 @@
 <div class="swiper-admin col-md-10 col-md-offset-1">
+	<div class="swiper-title">
+		<label class="title-label">Texte page d'accueil</label>
+		<input class="title-input" name="title" value="{$title}" type="text" placeholder="un text qui irra sur le slideshow">
+	</div>
 	<div class="swiper-admin-layout">
 		<div class="sortable swiper-form">
 			{foreach from=$swipers item=swiper}
@@ -11,25 +15,25 @@
 					</div>
 					<div class="swiper-block-alt">
 						<input type="checkbox" name="style_a" value="1" {if $swiper['style_a']}checked{/if}>
-						<label for="style_a">style alternatif</label>
+						<label for="style_a">Cadre</label>
 					</div>
 					<div class="swiper-block-text">
-						<label class="swiper-label" for="text_a">text alternatif</label>
-						<input class="swiper-input input-a" type="text" name="text_a" value="{$swiper['text_a']}">
+						<label class="swiper-label" for="text_a">Description</label>
+						<input class="swiper-input input-a" type="text" name="text_a" value="{$swiper['text_a']}" placeholder="Une phrase qui decrit l'image">
 					</div>
 				</div>
 				<div>
 					<div class="swiper-block-img">
-						<label class="swiper-label">url image a</label>
+						<label class="swiper-label">url image b</label>
 						<input class="swiper-input input-b" name="url_b" value="{$swiper['url_b']}" type="text">
 					</div>
 					<div class="swiper-block-alt">
 						<input type="checkbox" name="style_b" value="1" {if $swiper['style_b']}checked{/if}>
-						<label for="style_b">style alternatif</label>
+						<label for="style_b">Cadre</label>
 					</div>
 					<div class="swiper-block-text">
-						<label class="swiper-label" for="text_b">text alternatif</label>
-						<input class="swiper-input input-a" type="text" name="text_b" value="{$swiper['text_b']}">
+						<label class="swiper-label" for="text_b">Description</label>
+						<input class="swiper-input input-a" type="text" name="text_b" value="{$swiper['text_b']}" placeholder="Une phrase qui decrit l'image">
 					</div>
 				</div>
 				<div class="bootstrap">
@@ -50,7 +54,7 @@
 			</div>
 			<div class="swiper-upload-list">
 				{foreach from=$imgList item=img}
-					{if $img != '.' && $img != '..'  && $img != 'big-'}
+					{if $img != '.' && $img != '..'  && !( preg_match("/^big-\w*/",$img))}
 					<div class="img-select">
 						<span class="img-trash" data-img="{$img}"><i class="material-icons">delete</i></span>
 						<img src="{$uri}upload/skankyswiper/{$img}" alt="{$img}" width="100" height="100"><br>
@@ -83,25 +87,25 @@
 			</div>
 			<div class="swiper-block-alt">
 				<input type="checkbox" name="style_a" value="1">
-				<label for="style_a">style alternatif</label>
+				<label for="style_a">Cadre</label>
 			</div>
 			<div class="swiper-block-text">
-				<label class="swiper-label" for="text_a">text alternatif</label>
-				<input class="swiper-input input-a" name="text_a" value="" type="text">
+				<label class="swiper-label" for="text_a">Description</label>
+				<input class="swiper-input input-a" name="text_a" value="" type="text" placeholder="Une phrase qui decrit l'image">
 			</div>
 		</div>
 		<div>
 			<div class="swiper-block-img">
-				<label class="swiper-label">url image a</label>
+				<label class="swiper-label">url image b</label>
 				<input class="swiper-input input-b" name="url_b" value="" type="text">
 			</div>
 			<div class="swiper-block-alt">
 				<input type="checkbox" name="style_b" value="1">
-				<label for="style_b">style alternatif</label>
+				<label for="style_b">Cadre</label>
 			</div>
 			<div class="swiper-block-text">
-				<label class="swiper-label" for="text_b">text alternatif</label>
-				<input class="swiper-input input-a" name="text_b" value="" type="text">
+				<label class="swiper-label" for="text_b">Description</label>
+				<input class="swiper-input input-a" name="text_b" value="" type="text" placeholder="Une phrase qui decrit l'image">
 			</div>
 		</div>
 		<div class="bootstrap">
@@ -114,6 +118,32 @@
 
 {literal}
 <style>
+	.swiper-title{
+		padding: 16px;
+		margin: 0 32px;
+	}
+	.title-label{
+		width:30%!important;
+		display: inline-block!important;
+		font-weight: normal!important;
+		line-height: 40px;
+		text-align: right;
+	}
+	.title-input{
+		display: inline-block;
+		width: 48%;
+		height: 31px;
+		padding: 8px!important;
+		font-size: 12px;
+		line-height: 1.42857;
+		color: #555;
+		background-color: #F5F8F9;
+		background-image: none;
+		border: 1px solid #C7D6DB;
+		border-radius: 3px;
+		transition: border-color ease-in-out 0.15s,box-shadow ease-in-out 0.15s;
+	}
+
 	.swiper-label{
 		width: 80px!important;
 		display: inline-block!important;
@@ -220,7 +250,7 @@ $(document).ready(function(){
 		postData = [];
 		$('.swiper-form').children('.swiper-group').each(function(k){
 			data = {};
-			data.id = $(this).find('input[name=_id]').val();
+			data.id = parseInt($(this).find('input[name=_id]').val());
 			data.url_a = $(this).find('input[name=url_a]').val();
 			data.style_a = $(this).find('input[name=style_a]').prop("checked");
 			data.text_a = $(this).find('input[name=text_a]').val();
@@ -230,10 +260,10 @@ $(document).ready(function(){
 			data.position = k;
 			postData.push(data);
 		});
-
 		valuForm = JSON.stringify(postData);
+		let title = $('input[name=title]').val();
 
-		$.post(link,{data: valuForm},function(result){
+		$.post(link,{data: valuForm,title:title},function(result){
 			location.reload();
 		})
 	})
@@ -262,6 +292,7 @@ $(document).ready(function(){
 	
 	$('#input-img').on('change',function(e){
 		//console.log(e.target.files);
+		fileList = [];
 		list = e.target.files;
 		for (var i = 0; i < e.target.files.length; i++) {
 			if(e.target.files[i].size<=5242880){

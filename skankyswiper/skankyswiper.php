@@ -66,7 +66,10 @@ class skankyswiper extends Module {
 				`style_b` tinyint(1) NOT NULL DEFAULT \'0\',
 				`text_b` varchar(255) DEFAULT NULL,
 				`position` int(10) UNSIGNED NOT NULL
-			) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;')){
+			) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;') || 
+			!Db::getInstance()->execute('ALTER TABLE `'._DB_PREFIX_.'s_swiper` ADD PRIMARY KEY (`id_s_swiper`);') || 
+			!Db::getInstance()->execute('ALTER TABLE `'._DB_PREFIX_.'s_swiper` MODIFY `id_s_swiper` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;')
+		){
 			return false;
 		}
 
@@ -83,7 +86,8 @@ class skankyswiper extends Module {
 			!Configuration::updateValue('SKANKYSWIPER_WIDTH', '800') ||
 			!Configuration::updateValue('SKANKYSWIPER_HEIGHT', '600') ||
 			!Configuration::updateValue('SKANKYSWIPER_BIG_WIDTH', '1920') ||
-			!Configuration::updateValue('SKANKYSWIPER_BIG_HEIGHT', '1080')
+			!Configuration::updateValue('SKANKYSWIPER_BIG_HEIGHT', '1080') ||
+			!Configuration::updateValue('SKANKYSWIPER_SPECIAL_CLASS', 'special-class')
 		){
 			return false;
 		}
@@ -105,7 +109,8 @@ class skankyswiper extends Module {
 			!Configuration::deleteByName('SKANKYSWIPER_WIDTH') ||
 			!Configuration::deleteByName('SKANKYSWIPER_HEIGHT') ||
 			!Configuration::deleteByName('SKANKYSWIPER_BIG_WIDTH') ||
-			!Configuration::deleteByName('SKANKYSWIPER_BIG_HEIGHT')
+			!Configuration::deleteByName('SKANKYSWIPER_BIG_HEIGHT') ||
+			!Configuration::deleteByName('SKANKYSWIPER_SPECIAL_CLASS') 
 		){
 			return false;
 		}
@@ -129,6 +134,7 @@ class skankyswiper extends Module {
 			Configuration::updateValue('SKANKYSWIPER_HEIGHT', Tools::getValue('SKANKYSWIPER_HEIGHT'));
 			Configuration::updateValue('SKANKYSWIPER_BIG_WIDTH', Tools::getValue('SKANKYSWIPER_BIG_WIDTH'));
 			Configuration::updateValue('SKANKYSWIPER_BIG_HEIGHT', Tools::getValue('SKANKYSWIPER_BIG_HEIGHT'));
+			Configuration::updateValue('SKANKYSWIPER_SPECIAL_CLASS', Tools::getValue('SKANKYSWIPER_SPECIAL_CLASS'));
 			$output .= $this->displayConfirmation($this->l('Settings updated'));
 			
 		}
@@ -201,6 +207,12 @@ class skankyswiper extends Module {
 							'label' => $this->l('Disabled')
 						]
 					]
+				],[
+					'type' => 'text',
+					'label' => $this->l('special class'),
+					'name' => 'SKANKYSWIPER_SPECIAL_CLASS',
+					'size' => 20,
+					'required' => true
 				],[
 					'type' => 'switch',
 					'label' => $this->l('auto resize'),
@@ -291,6 +303,7 @@ class skankyswiper extends Module {
 		$helper->fields_value['SKANKYSWIPER_HEIGHT'] = Configuration::get('SKANKYSWIPER_HEIGHT');
 		$helper->fields_value['SKANKYSWIPER_BIG_WIDTH'] = Configuration::get('SKANKYSWIPER_BIG_WIDTH');
 		$helper->fields_value['SKANKYSWIPER_BIG_HEIGHT'] = Configuration::get('SKANKYSWIPER_BIG_HEIGHT');
+		$helper->fields_value['SKANKYSWIPER_SPECIAL_CLASS'] = Configuration::get('SKANKYSWIPER_SPECIAL_CLASS');
 
 
 		return $helper->generateForm($fields_form);
@@ -299,14 +312,26 @@ class skankyswiper extends Module {
 	public function hookHome($params){
 		$query = 'SELECT * FROM '._DB_PREFIX_.'s_swiper  ORDER BY position ASC';
 		$results = Db::getInstance()->ExecuteS($query);
-
+		$class = Configuration::get('SKANKYSWIPER_SPECIAL_CLASS');
+		foreach ($results as $key => $value){
+			if(!empty($value['url_a'])){
+				$results[$key]['url_a_big'] =$this->creatBigUrl($value['url_a']);
+			}
+			if(!empty($value['url_b'])){
+				$results[$key]['url_b_big'] =$this->creatBigUrl($value['url_b']);
+			}
+			$results[$key]['style_a'] = ((int)$value['style_a'])?$class:'';
+			$results[$key]['style_b'] = ((int)$value['style_b'])?$class:'';
+		}
 		$forview['swipers'] = $results;
-		$forview['swiperConf']['autoplay'] = (int)Configuration::get('SKANKYSWIPER_AUTOSTART')?Configuration::get('SKANKYSWIPER_DELAY'):false;
+		$forview['swiperTitle'] = Configuration::get('SKANKYSWIPER');
+		$forview['minWidth'] = Configuration::get('SKANKYSWIPER_WIDTH');
+		$forview['bigWidth'] = Configuration::get('SKANKYSWIPER_BIG_WIDTH');
+		$forview['swiperConf']['autoplay'] = (int)Configuration::get('SKANKYSWIPER_AUTOSTART')?(int)Configuration::get('SKANKYSWIPER_DELAY'):false;
 		$forview['swiperConf']['speed'] = (int)Configuration::get('SKANKYSWIPER_SPEED');
 		$forview['swiperConf']['nextButton'] = Configuration::get('SKANKYSWIPER_NAV')?'.swiper-button-next':'';
 		$forview['swiperConf']['prevButton'] = Configuration::get('SKANKYSWIPER_NAV')?'.swiper-button-prev':'';
  		$forview['swiperConf']['pagination'] = Configuration::get('SKANKYSWIPER_PAGIN')?'.swiper-pagination':'';
-		//$forview['swiperConf'] = json_encode($forview['swiperConf']);.swiper-button-prev .swiper-button-next
 		//var_dump($forview);
 		return $this->fetch( 'module:skankyswiper/views/templates/hook/swiper.tpl', $forview);
 	}
@@ -316,4 +341,10 @@ class skankyswiper extends Module {
         $this->context->controller->registerJavascript('modules-swiper-js', 'modules/'.strtolower($this->name).'/views/js/swiper.js');
     }
     
+    public function creatBigUrl($url){
+    	$a = explode('/',$url);
+    	$i = count($a)-1;
+    	$a[$i] = 'big-'.$a[$i];
+    	return join('/',$a);
+    }
 }

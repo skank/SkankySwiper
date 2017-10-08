@@ -47,6 +47,7 @@ class AdminSkankySwiperController extends ModuleAdminController {
 		}
 		$imgList = scandir($imgDir);
 
+		$this->context->smarty->assign('title', Configuration::get('SKANKYSWIPER'));
 		$this->context->smarty->assign('imgList', $imgList);
 		$this->context->smarty->assign('swipers', $results);
 		$this->context->smarty->assign('ajaxUrl', $url);
@@ -87,6 +88,7 @@ class AdminSkankySwiperController extends ModuleAdminController {
 				],'id_s_swiper = '.$swiper->id);
 			}
 		}
+		Configuration::updateValue('SKANKYSWIPER', Tools::getValue('title'));
 		//message tout va bien;
 		//<div class="module_confirmation conf confirm alert alert-success">
         //    <button type="button" class="close" data-dismiss="alert">×</button>
@@ -135,7 +137,7 @@ class AdminSkankySwiperController extends ModuleAdminController {
 
 				$dWidth = Configuration::get('SKANKYSWIPER_BIG_WIDTH');
 				$dHeight = Configuration::get('SKANKYSWIPER_BIG_HEIGHT');
-				$this->resizeImg('big-'.$h['X-File-Name'],$dWidth ,$dHeight);
+				$this->resizeImg($h['X-File-Name'],$dWidth ,$dHeight,'big-');
 			}
 			
 
@@ -150,16 +152,18 @@ class AdminSkankySwiperController extends ModuleAdminController {
 		$img = Tools::getValue('img');
 		$result = ['statu'=>false];
 		$result['statu'] = unlink(_PS_UPLOAD_DIR_.'skankyswiper/'.$img);
-		$result['statu-big'] = unlink(_PS_UPLOAD_DIR_.'skankyswiper/big-'.$img);
+		if(file_exists(_PS_UPLOAD_DIR_.'skankyswiper/big-'.$img)){
+			$result['statu-big'] = unlink(_PS_UPLOAD_DIR_.'skankyswiper/big-'.$img);
+		}
 		echo json_encode($result);
 		die();
 	}
 
-	private function resizeImg($imgName,$dWidth ,$dHeight){
+	private function resizeImg($imgName,$dWidth ,$dHeight,$prefix = ''){
 
 		$dir =  _PS_UPLOAD_DIR_.'skankyswiper/';
-		$fileName = $dir.'/'.$imgName;
-
+		$fileName = $dir.$imgName;
+		$outputFile =  $dir.$prefix.$imgName;
 		$dimension = getimagesize($fileName);
 		$oWidth  = $dimension[0];
 		$oHeight = $dimension[1];
@@ -217,13 +221,13 @@ class AdminSkankySwiperController extends ModuleAdminController {
 		//creation du nouveau fichier
 		switch ($ext) {
 			case 'jpg':
-				imagejpeg($miniature,$fileName,90);
+				imagejpeg($miniature,$outputFile,100);
 			break;
 			case 'png':
-				imagepng($miniature,$fileName); 
+				imagepng($miniature,$outputFile); 
 			break;
 			case 'gif':
-				imagegif($miniature,$fileName);
+				imagegif($miniature,$outputFile);
 			break;
 			default:
 				return false; 
