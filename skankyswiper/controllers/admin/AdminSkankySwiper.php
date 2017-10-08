@@ -67,24 +67,24 @@ class AdminSkankySwiperController extends ModuleAdminController {
 			if($swiper->id=='-1'){
 				//it's a news
 				Db::getInstance()->insert('s_swiper', [
-						'url_a'    => $swiper->url_a,
-						'style_a'  => $swiper->style_a,
-						'text_a'   => $swiper->text_a,
-						'url_b'    => $swiper->url_b,
-						'style_b'  => $swiper->style_b,
-						'text_b'   => $swiper->text_b,
-						'position' => $swiper->position
+					'url_a'    => $swiper->url_a,
+					'style_a'  => $swiper->style_a,
+					'text_a'   => $swiper->text_a,
+					'url_b'    => $swiper->url_b,
+					'style_b'  => $swiper->style_b,
+					'text_b'   => $swiper->text_b,
+					'position' => $swiper->position
 				]);
 			}else{
 				//it's a update
 				Db::getInstance()->update('s_swiper', [
-						'url_a'    => $swiper->url_a,
-						'style_a'  => $swiper->style_a,
-						'text_a'   => $swiper->text_a,
-						'url_b'    => $swiper->url_b,
-						'style_b'  => $swiper->style_b,
-						'text_b'   => $swiper->text_b,
-						'position' => $swiper->position
+					'url_a'    => $swiper->url_a,
+					'style_a'  => $swiper->style_a,
+					'text_a'   => $swiper->text_a,
+					'url_b'    => $swiper->url_b,
+					'style_b'  => $swiper->style_b,
+					'text_b'   => $swiper->text_b,
+					'position' => $swiper->position
 				],'id_s_swiper = '.$swiper->id);
 			}
 		}
@@ -128,7 +128,7 @@ class AdminSkankySwiperController extends ModuleAdminController {
 			$media['name'] = $h['X-File-Name'];
 			$media['size'] = $h['X-File-Size'];
 			$result['statu'] = true;
-			$result['message'] = '<div class="img-select"><span class="img-trash" data-img="/upload/skankyswiper/'.$h['X-File-Name'].'"><i class="material-icons">delete</i></span><img src="'.__PS_BASE_URI__ .'upload/skankyswiper/'.$h['X-File-Name'].'" alt="'.$h['X-File-Name'].'" width="100" height="100"><br>'.$h['X-File-Name'].'</div>' ;
+			$result['message'] = '<div class="img-select"><span class="img-trash" data-img="'.$h['X-File-Name'].'"><i class="material-icons">delete</i></span><img src="'.__PS_BASE_URI__ .'upload/skankyswiper/'.$h['X-File-Name'].'" alt="'.$h['X-File-Name'].'" width="100" height="100"><br>'.$h['X-File-Name'].'</div>' ;
 
 			if(Configuration::get('SKANKYSWIPER_RESIZE')){
 				$dWidth = Configuration::get('SKANKYSWIPER_WIDTH');
