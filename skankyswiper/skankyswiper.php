@@ -57,13 +57,16 @@ class skankyswiper extends Module {
 		$tab->add();
 
 		if (!Db::getInstance()->execute('
-		            CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'s_swiper` (
-		                `id_s_swiper` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-		                `url_a` VARCHAR(255) NOT NULL,
-		                `url_b` VARCHAR(255) NULL,
-		                `position` INT UNSIGNED NOT NULL,
-		                PRIMARY KEY (`id_s_swiper`)
-		            ) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;')){
+			CREATE TABLE `'._DB_PREFIX_.'s_swiper` (
+				`id_s_swiper` int(10) UNSIGNED NOT NULL,
+				`url_a` varchar(255) NOT NULL,
+				`style_a` tinyint(1) NOT NULL DEFAULT \'0\',
+				`text_a` varchar(255) DEFAULT NULL,
+				`url_b` varchar(255) DEFAULT NULL,
+				`style_b` tinyint(1) NOT NULL DEFAULT \'0\',
+				`text_b` varchar(255) DEFAULT NULL,
+				`position` int(10) UNSIGNED NOT NULL
+			) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;')){
 			return false;
 		}
 
@@ -74,11 +77,13 @@ class skankyswiper extends Module {
 			!Configuration::updateValue('SKANKYSWIPER', 'salut salut')||
 			!Configuration::updateValue('SKANKYSWIPER_SPEED', '1000')||
 			!Configuration::updateValue('SKANKYSWIPER_DELAY', '3000')||
-			!Configuration::updateValue('SKANKYSWIPER_NAV', 0)||
-			!Configuration::updateValue('SKANKYSWIPER_PAGIN', 0)||
+			!Configuration::updateValue('SKANKYSWIPER_NAV', 0) ||
+			!Configuration::updateValue('SKANKYSWIPER_PAGIN', 0) ||
 			!Configuration::updateValue('SKANKYSWIPER_RESIZE', '1') ||
 			!Configuration::updateValue('SKANKYSWIPER_WIDTH', '800') ||
-			!Configuration::updateValue('SKANKYSWIPER_HEIGHT', '600')
+			!Configuration::updateValue('SKANKYSWIPER_HEIGHT', '600') ||
+			!Configuration::updateValue('SKANKYSWIPER_BIG_WIDTH', '1920') ||
+			!Configuration::updateValue('SKANKYSWIPER_BIG_HEIGHT', '1080')
 		){
 			return false;
 		}
@@ -98,7 +103,9 @@ class skankyswiper extends Module {
 			!Configuration::deleteByName('SKANKYSWIPER_PAGIN') ||
 			!Configuration::deleteByName('SKANKYSWIPER_RESIZE') ||
 			!Configuration::deleteByName('SKANKYSWIPER_WIDTH') ||
-			!Configuration::deleteByName('SKANKYSWIPER_HEIGHT')
+			!Configuration::deleteByName('SKANKYSWIPER_HEIGHT') ||
+			!Configuration::deleteByName('SKANKYSWIPER_BIG_WIDTH') ||
+			!Configuration::deleteByName('SKANKYSWIPER_BIG_HEIGHT')
 		){
 			return false;
 		}
@@ -120,6 +127,8 @@ class skankyswiper extends Module {
 			Configuration::updateValue('SKANKYSWIPER_RESIZE', Tools::getValue('SKANKYSWIPER_RESIZE'));
 			Configuration::updateValue('SKANKYSWIPER_WIDTH', Tools::getValue('SKANKYSWIPER_WIDTH'));
 			Configuration::updateValue('SKANKYSWIPER_HEIGHT', Tools::getValue('SKANKYSWIPER_HEIGHT'));
+			Configuration::updateValue('SKANKYSWIPER_BIG_WIDTH', Tools::getValue('SKANKYSWIPER_BIG_WIDTH'));
+			Configuration::updateValue('SKANKYSWIPER_BIG_HEIGHT', Tools::getValue('SKANKYSWIPER_BIG_HEIGHT'));
 			$output .= $this->displayConfirmation($this->l('Settings updated'));
 			
 		}
@@ -220,6 +229,19 @@ class skankyswiper extends Module {
 					'name' => 'SKANKYSWIPER_HEIGHT',
 					'size' => 20,
 					'required' => true
+				],[
+
+					'type' => 'text',
+					'label' => $this->l('img big width'),
+					'name' => 'SKANKYSWIPER_BIG_WIDTH',
+					'size' => 20,
+					'required' => true
+				],[
+					'type' => 'text',
+					'label' => $this->l('img big height'),
+					'name' => 'SKANKYSWIPER_BIG_HEIGHT',
+					'size' => 20,
+					'required' => true
 				]
 
 			],
@@ -267,6 +289,9 @@ class skankyswiper extends Module {
 		$helper->fields_value['SKANKYSWIPER_RESIZE'] = Configuration::get('SKANKYSWIPER_RESIZE');
 		$helper->fields_value['SKANKYSWIPER_WIDTH'] = Configuration::get('SKANKYSWIPER_WIDTH');
 		$helper->fields_value['SKANKYSWIPER_HEIGHT'] = Configuration::get('SKANKYSWIPER_HEIGHT');
+		$helper->fields_value['SKANKYSWIPER_BIG_WIDTH'] = Configuration::get('SKANKYSWIPER_BIG_WIDTH');
+		$helper->fields_value['SKANKYSWIPER_BIG_HEIGHT'] = Configuration::get('SKANKYSWIPER_BIG_HEIGHT');
+
 
 		return $helper->generateForm($fields_form);
 	}

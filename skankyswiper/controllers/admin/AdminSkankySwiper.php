@@ -54,7 +54,7 @@ class AdminSkankySwiperController extends ModuleAdminController {
 		$this->addJqueryUI('ui.sortable');
 		$tpl = $this->createTemplate('content.tpl')->fetch();
 
-		/* DO STUFF HERE */
+
 	}
 
 	public function save(){
@@ -67,15 +67,23 @@ class AdminSkankySwiperController extends ModuleAdminController {
 				//it's a news
 				Db::getInstance()->insert('s_swiper', [
 						'url_a'    => $swiper->url_a,
+						'style_a'  => $swiper->style_a,
+						'text_a'   => $swiper->text_a,
 						'url_b'    => $swiper->url_b,
-						'position' => $swiper->position,
+						'style_b'  => $swiper->style_b,
+						'text_b'   => $swiper->text_b,
+						'position' => $swiper->position
 				]);
 			}else{
 				//it's a update
 				Db::getInstance()->update('s_swiper', [
 						'url_a'    => $swiper->url_a,
+						'style_a'  => $swiper->style_a,
+						'text_a'   => $swiper->text_a,
 						'url_b'    => $swiper->url_b,
-						'position' => $swiper->position,
+						'style_b'  => $swiper->style_b,
+						'text_b'   => $swiper->text_b,
+						'position' => $swiper->position
 				],'id_s_swiper = '.$swiper->id);
 			}
 		}
@@ -121,7 +129,13 @@ class AdminSkankySwiperController extends ModuleAdminController {
 			$result['message'] = '<div class="img-select"><span class="img-trash" data-img="/upload/skankyswiper/'.$h['X-File-Name'].'"><i class="material-icons">delete</i></span><img src="'.__PS_BASE_URI__ .'upload/skankyswiper/'.$h['X-File-Name'].'" alt="'.$h['X-File-Name'].'" width="100" height="100"><br>'.$h['X-File-Name'].'</div>' ;
 
 			if(Configuration::get('SKANKYSWIPER_RESIZE')){
-				$this->resizeImg($h['X-File-Name']);
+				$dWidth = Configuration::get('SKANKYSWIPER_WIDTH');
+				$dHeight = Configuration::get('SKANKYSWIPER_HEIGHT');
+				$this->resizeImg($h['X-File-Name'],$dWidth ,$dHeight);
+
+				$dWidth = Configuration::get('SKANKYSWIPER_BIG_WIDTH');
+				$dHeight = Configuration::get('SKANKYSWIPER_BIG_HEIGHT');
+				$this->resizeImg('big-'.$h['X-File-Name'],$dWidth ,$dHeight);
 			}
 			
 
@@ -136,13 +150,13 @@ class AdminSkankySwiperController extends ModuleAdminController {
 		$img = Tools::getValue('img');
 		$result = ['statu'=>false];
 		$result['statu'] = unlink(_PS_UPLOAD_DIR_.'skankyswiper/'.$img);
+		$result['statu-big'] = unlink(_PS_UPLOAD_DIR_.'skankyswiper/big-'.$img);
 		echo json_encode($result);
 		die();
 	}
 
-	private function resizeImg($imgName){
-		$dWidth = Configuration::get('SKANKYSWIPER_WIDTH');
-		$dHeight = Configuration::get('SKANKYSWIPER_HEIGHT');
+	private function resizeImg($imgName,$dWidth ,$dHeight){
+
 		$dir =  _PS_UPLOAD_DIR_.'skankyswiper/';
 		$fileName = $dir.'/'.$imgName;
 
@@ -166,34 +180,12 @@ class AdminSkankySwiperController extends ModuleAdminController {
 		$info['src_w'] = $oWidth;
 		$info['src_h'] = $oHeight;
 
-		if($oRatio == $dRation){
-
-		}else if($oRatio < $dRation){
+		if($oRatio < $dRation){
 			$info['dst_w'] = ($oWidth * $dHeight)/$oHeight;
 		}else if($oRatio > $dRation){
 			$info['dst_h']= ($oHeight * $dWidth)/$oWidth;
 		}
 
-/*		if($oRatio == $dRation){
-			$info['src_x'] = 0; 
-			$info['src_y'] = 0;
-			$info['src_w'] = $oWidth;
-			$info['src_h'] = $oHeight;
-		}else if($oRatio < $dRation){
-			$pro = ($oHeight * $dWidth)/$oWidth;
-			$step = ($pro - $dHeight);
-			$info['src_x'] = 0; 
-			$info['src_y'] = $step/2;
-			$info['src_w'] = $oWidth;
-			$info['src_h'] = ($dHeight * ($oWidth))/$dWidth;
-		}else if($oRatio > $dRation){
-			$pro = ($oWidth * $dHeight)/$oHeight;
-			$step = ($pro - $dWidth);
-			$info['src_x'] = $step/2; 
-			$info['src_y'] = 0;
-			$info['src_w'] = ($dWidth * ($oHeight))/$dHeight;
-			$info['src_h'] = $oHeight;
-		}*/
 
 		$miniature = imagecreatetruecolor($info['dst_w'],$info['dst_h']);
 		$ext = explode('.',$imgName);

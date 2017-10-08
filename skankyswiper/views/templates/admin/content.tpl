@@ -3,14 +3,34 @@
 		<div class="sortable swiper-form">
 			{foreach from=$swipers item=swiper}
 			<div class="swiper-group">
-				<div>
-					<input type="hidden" class="input-id" name="_id" value="{$swiper['id_s_swiper']}">
-					<label class="swiper-label">url image a</label>
-					<input class="swiper-input input-a" name="url_a" value="{$swiper['url_a']}" type="text">
+				<div class="swiper-block-a">
+					<div class="swiper-block-img">
+						<input type="hidden" class="input-id" name="_id" value="{$swiper['id_s_swiper']}">
+						<label class="swiper-label">url image a</label>
+						<input class="swiper-input input-a" name="url_a" value="{$swiper['url_a']}" type="text">
+					</div>
+					<div class="swiper-block-alt">
+						<input type="checkbox" name="style_a" value="1" {if $swiper['style_a']}checked{/if}>
+						<label for="style_a">style alternatif</label>
+					</div>
+					<div class="swiper-block-text">
+						<label class="swiper-label" for="text_a">text alternatif</label>
+						<input class="swiper-input input-a" type="text" name="text_a" value="{$swiper['text_a']}">
+					</div>
 				</div>
 				<div>
-					<label class="swiper-label">url image b</label>
-					<input class="swiper-input input-b" name="url_b" value="{$swiper['url_b']}" type="text">
+					<div class="swiper-block-img">
+						<label class="swiper-label">url image a</label>
+						<input class="swiper-input input-b" name="url_b" value="{$swiper['url_b']}" type="text">
+					</div>
+					<div class="swiper-block-alt">
+						<input type="checkbox" name="style_b" value="1" {if $swiper['style_b']}checked{/if}>
+						<label for="style_b">style alternatif</label>
+					</div>
+					<div class="swiper-block-text">
+						<label class="swiper-label" for="text_b">text alternatif</label>
+						<input class="swiper-input input-a" type="text" name="text_b" value="{$swiper['text_b']}">
+					</div>
 				</div>
 				<div class="bootstrap">
 					<button class="btn btn-default remove-btn">
@@ -30,7 +50,7 @@
 			</div>
 			<div class="swiper-upload-list">
 				{foreach from=$imgList item=img}
-					{if $img != '.' && $img != '..'  }
+					{if $img != '.' && $img != '..'  && $img != 'big-'}
 					<div class="img-select">
 						<span class="img-trash" data-img="{$img}"><i class="material-icons">delete</i></span>
 						<img src="{$uri}upload/skankyswiper/{$img}" alt="{$img}" width="100" height="100"><br>
@@ -54,15 +74,35 @@
 	<div class="clear"></div>
 </div>
 <div class="model" style="display:none">
-	 <div class="swiper-group">
-		<div>
-			<input type="hidden" name="_id" value="-1">
-			<label class="swiper-label">url image a</label>
-			<input class="swiper-input" name="url_a" value="" type="text">
+	<div class="swiper-group">
+		<div class="swiper-block-a">
+			<div class="swiper-block-img">
+				<input type="hidden" class="input-id" name="_id" value="-1">
+				<label class="swiper-label">url image a</label>
+				<input class="swiper-input input-a" name="url_a" value="" type="text">
+			</div>
+			<div class="swiper-block-alt">
+				<input type="checkbox" name="style_a" value="1">
+				<label for="style_a">style alternatif</label>
+			</div>
+			<div class="swiper-block-text">
+				<label class="swiper-label" for="text_a">text alternatif</label>
+				<input class="swiper-input input-a" name="text_a" value="" type="text">
+			</div>
 		</div>
 		<div>
-			<label class="swiper-label">url image b</label>
-			<input class="swiper-input" name="url_b" value="" type="text">
+			<div class="swiper-block-img">
+				<label class="swiper-label">url image a</label>
+				<input class="swiper-input input-b" name="url_b" value="" type="text">
+			</div>
+			<div class="swiper-block-alt">
+				<input type="checkbox" name="style_b" value="1">
+				<label for="style_b">style alternatif</label>
+			</div>
+			<div class="swiper-block-text">
+				<label class="swiper-label" for="text_b">text alternatif</label>
+				<input class="swiper-input input-a" name="text_b" value="" type="text">
+			</div>
 		</div>
 		<div class="bootstrap">
 			<button class="btn btn-default remove-btn">
@@ -182,7 +222,11 @@ $(document).ready(function(){
 			data = {};
 			data.id = $(this).find('input[name=_id]').val();
 			data.url_a = $(this).find('input[name=url_a]').val();
+			data.style_a = $(this).find('input[name=style_a]').prop("checked");
+			data.text_a = $(this).find('input[name=text_a]').val();
 			data.url_b = $(this).find('input[name=url_b]').val();
+			data.style_b = $(this).find('input[name=style_b]').prop("checked");
+			data.text_b = $(this).find('input[name=text_b]').val();
 			data.position = k;
 			postData.push(data);
 		});
@@ -191,7 +235,6 @@ $(document).ready(function(){
 
 		$.post(link,{data: valuForm},function(result){
 			location.reload();
-			
 		})
 	})
 	
