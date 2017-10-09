@@ -337,8 +337,8 @@ class skankyswiper extends Module {
 	}
 	
 	public function hookdisplayHeader($params){
-		$this->context->controller->registerStylesheet('modules-swiper-css', 'modules/'.strtolower($this->name).'/views/css/swiper.css');
-        $this->context->controller->registerJavascript('modules-swiper-js', 'modules/'.strtolower($this->name).'/views/js/swiper.js');
+		$this->context->controller->registerStylesheet('modules-swiper-css', __PS_BASE_URI__.'modules/'.strtolower($this->name).'/views/css/swiper.css');
+        $this->context->controller->registerJavascript('modules-swiper-js', __PS_BASE_URI__.'modules/'.strtolower($this->name).'/views/js/swiper.js');
     }
     
     public function creatBigUrl($url){
