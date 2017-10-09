@@ -261,7 +261,7 @@ $(document).ready(function(){
 			postData.push(data);
 		});
 		valuForm = JSON.stringify(postData);
-		let title = $('input[name=title]').val();
+		var title = $('input[name=title]').val();
 
 		$.post(link,{data: valuForm,title:title},function(result){
 			location.reload();

@@ -77,6 +77,8 @@ class skankyswiper extends Module {
 			!$this->registerHook('leftColumn') ||
 			!$this->registerHook('header') ||
 			!$this->registerHook('displayHome') ||
+			!$this->registerHook('displayTop') ||
+			!$this->registerHook('displayBanner') ||
 			!Configuration::updateValue('SKANKYSWIPER', 'salut salut')||
 			!Configuration::updateValue('SKANKYSWIPER_SPEED', '1000')||
 			!Configuration::updateValue('SKANKYSWIPER_DELAY', '3000')||
@@ -309,7 +311,8 @@ class skankyswiper extends Module {
 		return $helper->generateForm($fields_form);
 	}
 
-	public function hookHome($params){
+
+	public function allHook($params){
 		$query = 'SELECT * FROM '._DB_PREFIX_.'s_swiper  ORDER BY position ASC';
 		$results = Db::getInstance()->ExecuteS($query);
 		$class = Configuration::get('SKANKYSWIPER_SPECIAL_CLASS');
@@ -335,10 +338,20 @@ class skankyswiper extends Module {
 		//var_dump($forview);
 		return $this->fetch( 'module:skankyswiper/views/templates/hook/swiper.tpl', $forview);
 	}
+
+	public function hookHome($params){
+		return $this->allHook($params);
+	}
+	public function hookTop($params){
+		return $this->allHook($params);
+	}
+	public function hookBanner($params){
+		return $this->allHook($params);
+	}
 	
 	public function hookdisplayHeader($params){
-		$this->context->controller->registerStylesheet('modules-swiper-css', __PS_BASE_URI__.'modules/'.strtolower($this->name).'/views/css/swiper.css');
-        $this->context->controller->registerJavascript('modules-swiper-js', __PS_BASE_URI__.'modules/'.strtolower($this->name).'/views/js/swiper.js');
+		$this->context->controller->registerStylesheet('modules-swiper-css','modules/'.strtolower($this->name).'/views/css/swiper.css');
+		$this->context->controller->registerJavascript('modules-swiper-js', 'modules/'.strtolower($this->name).'/views/js/swiper.js');
     }
     
     public function creatBigUrl($url){

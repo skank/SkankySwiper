@@ -33,17 +33,17 @@
 {literal}
 <script type="text/javascript">
 document.addEventListener( 'DOMContentLoaded', function () {
-	let swiper;
-	let swiperConf = {/literal}{$swiperConf|@json_encode nofilter}{literal};
+	
+	var swiper = {};
+	var swiperConf = {/literal}{$swiperConf|@json_encode nofilter}{literal};
 	/*
 	Ajouter des configuration au swiper
 
 		swiperConf.slidesPerView = 3;
 		swiperConf.spaceBetween = 30;
+
 	 */
 	swiper = new Swiper('.swiper-container',swiperConf);
-
-
 	/*
 	contenu d un swiper
 		$swiper = [
